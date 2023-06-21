@@ -1,0 +1,135 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/thomas-lowry/figma-plugin-ds/dist/figma-plugin-ds.css">
+<style>
+  body {
+      padding: 1em;
+  }
+  input {
+      display: block;
+  }
+
+  #main {
+    /* Content */
+    box-sizing: border-box;
+    /* Auto layout */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /*padding: 24px 16px;*/
+    gap: 16px;
+  }
+
+  .card * {
+    height: 24px;
+    order:1px solid red;
+    text-align: center;
+  }
+  .card {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 8px;
+    gap: 8px;
+    height: 56px;
+    width: 100%;
+    /* light-mode/blue/blue-100 */
+    background: #E5F2FC;
+    /* light-mode/blue/blue-200 */
+    border: 1px solid #C0E0FA;
+    border-radius: 4px;
+    font-family: 'Roboto';
+    font-style: normal;
+    transition: background-color 200ms ease-out 100ms
+  }
+
+
+  .card .title {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    gap: 8px;
+    height: 24px;
+    /* Inside auto layout */
+    order: 0;
+    flex-grow: 0;
+  }
+  .card:hover {
+    /* light-mode/blue/blue-300 */
+    background: #8BC7F5;
+    /* light-mode/blue/blue-400 */
+    border: 1px solid #1C90ED;
+  }
+
+  .card:hover em,.card:hover strong {
+    /* light-mode/blue/blue-500 * */
+    color: #086DD7;
+  }
+  .card strong {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 20px;
+    /* identical to box height, or 143% */
+    letter-spacing: 0.02em;
+    /* light-mode/blue/blue-400 */
+    color: #1C90ED;
+    transition: color 200ms ease-out 100ms;
+    height:24px;
+  }
+
+  .card em {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 16px;
+    /* identical to box height, or 133% */
+    letter-spacing: 0.02em;
+    /* light-mode/blue/blue-300 */
+    color: #8BC7F5;
+    height: 24px;
+    transition: color 200ms ease-out 100ms
+  }
+
+</style>
+<div id="main">
+  <!--<div class="switch">
+    <input id="dark-mode-on" class="switch__toggle" type="checkbox">
+    <label class="switch__label" for="dark-mode-on">Overwrite existing pages</label>
+  </div>-->
+  <div class="card" id="create">
+      <div class="title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M4 7.55556L7.36842 4V4.00005L7.36847 4H9.89473H10.7369H14.1053H14.9474H16.6316L18.3158 7.11111L19.1579 8.44444L17.4738 8.44444V9.33333H16.6317V12L20.0001 12V17.3333H12.4211V12L15.7896 12V9.33333H14.9475V8.44444L14.9474 8.44444H14.1053H10.7369V11.1111V12V14.6667V15.5556V19.1111L10.7369 19.1111L12.4211 19.1111V20H4.84216V19.1111L6.52637 19.1111V15.5556V14.6667V12V11.1111V8.44444H4V7.55556ZM9.89479 13.2571V14.6667H8.55939L9.89479 13.2571ZM7.36852 15.5556L9.89479 15.5556V18.2222L7.36852 15.5556ZM7.36852 16.8126L8.70392 18.2222H7.36852V16.8126ZM9.89479 12L7.36847 14.6667V12H9.89479ZM7.71728 4.88889H9.89473V4.88895L7.36847 7.55556V5.25708L7.71728 4.88889ZM8.55939 7.55556L9.89473 6.14603V7.55556H8.55939ZM10.7369 7.55555L10.9053 7.55556L13.9368 4.88889H11.2101L10.7369 5.30517V7.55555ZM14.1053 7.55556H12.2207L14.1053 5.89781V7.55556ZM9.89473 8.44444L9.89479 8.44444V10.8889L8.04216 8.44444L9.89473 8.44444ZM5.19092 7.55556L6.52632 6.14597V7.55556H5.19092ZM7.36847 8.97847L8.98479 11.1111H7.36847V8.97847ZM14.9474 7.55556V4.88889H16.1429L17.5865 7.55556H14.9474ZM14.1052 13.7778H14.9473V15.5556H14.1052V13.7778ZM13.2632 12.8889H19.158V16.4444H13.2632V12.8889ZM17.4738 13.7778H18.3159V15.5556H17.4738V13.7778ZM15.7894 15.5556H16.6315V13.7778H15.7894V15.5556Z" fill="#086DD7"/>
+        </svg>
+        <strong>Scaffold</strong>
+      </div>
+      <em>Generates default page layout</em>
+  </div>
+  <div class="card" id="storybook">
+    <div class="title">
+      <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.4227 3.18318L15.335 5.21624C15.3322 5.33041 15.4598 5.40071 15.5481 5.33041L16.3172 4.72977L16.9702 5.25392C17.0552 5.31241 17.1691 5.25392 17.1746 5.14819L17.101 3.08026L18.069 3.00434C18.5716 2.96891 19 3.38227 19 3.90361V20.1017C19 20.6175 18.5825 21.0274 18.0832 21.001L6.38111 20.4622C5.92707 20.442 5.56078 20.0641 5.54661 19.5922L5.00154 4.74439C4.9732 4.24667 5.33948 3.81869 5.82187 3.79226L15.4145 3.16856L15.4227 3.18318ZM13.1917 9.97861C13.1917 10.3301 15.4887 10.1575 15.8004 9.91731C15.8004 7.51813 14.5511 6.24993 12.2689 6.24993C9.98074 6.24993 8.7091 7.54175 8.7091 9.46908C8.7091 12.8052 13.0696 12.8637 13.0696 14.6859C13.0696 15.2134 12.8369 15.512 12.306 15.512C11.6078 15.512 11.3238 15.1459 11.3609 13.8923C11.3609 13.6229 8.7091 13.5318 8.62134 13.8923C8.42566 16.9152 10.2424 17.7909 12.3262 17.7909C14.356 17.7909 15.94 16.6751 15.94 14.6566C15.94 11.0803 11.5058 11.1765 11.5058 9.40778C11.5058 8.68116 12.0313 8.58443 12.3262 8.58443C12.6554 8.58443 13.2348 8.6373 13.1923 9.9848L13.1917 9.97861Z" fill="#1C90ED"/>
+      </svg>
+      <strong>View Storybook</strong>
+    </div>
+  </div>
+<!--<button class="button button--primary" id="create">Scaffold <span>Generates default page layout</span></button>-->
+</div>
+<script>
+	document.getElementById('create').onclick = () => {
+		parent.postMessage({ pluginMessage: {type: 'createPages'} }, '*');
+	}
+  document.getElementById('storybook').onclick = () => {
+    window.open('https://storybook.internal.dckr.io/?path=%2Fstory%2Fintroduction--page&utm_source=figma-crane', '_blank');
+	}
+</script>
