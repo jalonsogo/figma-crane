@@ -1,135 +1,1845 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/thomas-lowry/figma-plugin-ds/dist/figma-plugin-ds.css">
 <style>
   body {
-      padding: 1em;
+    padding: 0;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
   }
-  input {
-      display: block;
-  }
-
-  #main {
-    /* Content */
-    box-sizing: border-box;
-    /* Auto layout */
+  
+  .tabs {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    /*padding: 24px 16px;*/
-    gap: 16px;
+    border-bottom: 1px solid #E5E5E5;
+    background: #FFFFFF;
   }
-
-  .card * {
-    height: 24px;
-    order:1px solid red;
+  
+  .tab {
+    flex: 1;
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 11px;
+    font-weight: 500;
+    color: #8C8C8C;
+    transition: all 0.2s;
+  }
+  
+  .tab.active {
+    color: #18A0FB;
+    border-bottom: 2px solid #18A0FB;
+  }
+  
+  .tab:hover {
+    background: #F5F5F5;
+  }
+  
+  .tab-content {
+    display: none;
+    height: calc(100vh - 45px);
+    flex-direction: column;
+  }
+  
+  .tab-content.active {
+    display: flex;
+  }
+  
+  .scrollable-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    padding-bottom: 16px;
+    min-height: 0;
+  }
+  
+  .bottom-buttons {
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid #E5E5E5;
+    flex-shrink: 0;
+    margin: 0;
+  }
+  
+  .layout-list {
+    margin-bottom: 0;
+  }
+  
+  .layout-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 11px;
+  }
+  
+  .layout-item .checkbox {
+    margin-right: 8px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
+  
+  .layout-item .checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  .layout-item .emoji {
+    margin-right: 8px;
+    font-size: 14px;
+  }
+  
+  .layout-item.existing {
+    opacity: 0.5;
+    color: #8C8C8C;
+  }
+  
+  .layout-item.existing .emoji {
+    opacity: 0.6;
+  }
+  
+  .separator-item-with-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+  }
+  
+  .separator-item-with-checkbox .checkbox {
+    margin-right: 8px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  
+  .separator-item-with-checkbox .checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  .separator-item-with-checkbox .separator-hr {
+    flex: 1;
+    margin: 0;
+  }
+  
+  .create-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: #18A0FB;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin: 0;
+  }
+  
+  .create-btn:hover {
+    background: #0F7CE8;
+  }
+  
+  .input-group {
+    margin-bottom: 16px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #E5E5E5;
+    border-radius: 3px;
+    font-size: 11px;
+    box-sizing: border-box;
+  }
+  
+  .input-group input:focus {
+    outline: none;
+    border-color: #18A0FB;
+    box-shadow: 0 0 0 1px #18A0FB;
+  }
+  
+  .layout-editor {
+    margin-bottom: 16px;
+  }
+  
+  .editable-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 4px;
+    border: 1px solid #E5E5E5;
+    border-radius: 3px;
+    background: #FAFAFA;
+  }
+  
+  .emoji-selector {
+    margin-right: 8px;
+    padding: 4px;
+    border: 1px solid #E5E5E5;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    background: white;
+  }
+  
+  .label-input {
+    flex: 1;
+    padding: 4px 6px;
+    border: 1px solid #E5E5E5;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 8px;
+    margin: 0;
+  }
+  
+  .save-btn, .reset-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: #18A0FB;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin: 0;
+  }
+  
+  .save-btn:hover, .reset-btn:hover {
+    background: #0F7CE8;
+  }
+  
+  .reset-btn {
+    background: #6C7B7F;
+  }
+  
+  .reset-btn:hover {
+    background: #5A6B70;
+  }
+  
+  .import-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: #18A0FB;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+  
+  .import-btn:hover {
+    background: #0F7CE8;
+  }
+  
+  .add-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #F0F0F0;
+  }
+  
+  .add-page-btn, .add-separator-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: #F8F8F8;
+    color: #333;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .add-page-btn:hover, .add-separator-btn:hover {
+    background: #E8F4FD;
+    border-color: #18A0FB;
+    color: #18A0FB;
+  }
+  
+  .separator-hr {
+    border: none;
+    border-top: 1px solid #E5E5E5;
+    margin: 8px 0;
+    height: 1px;
+  }
+  
+  .separator-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    border: 1px solid #E5E5E5;
+    border-radius: 3px;
+    background: #F8F8F8;
+  }
+  
+  .separator-label {
+    flex: 1;
+    font-size: 10px;
+    color: #8C8C8C;
+    font-style: italic;
     text-align: center;
   }
-  .card {
-    /* Auto layout */
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 16px 8px;
-    gap: 8px;
-    height: 56px;
-    width: 100%;
-    /* light-mode/blue/blue-100 */
-    background: #E5F2FC;
-    /* light-mode/blue/blue-200 */
-    border: 1px solid #C0E0FA;
-    border-radius: 4px;
-    font-family: 'Roboto';
-    font-style: normal;
-    transition: background-color 200ms ease-out 100ms
+  
+  .draggable {
+    cursor: grab;
+    transition: all 0.2s ease;
   }
-
-
-  .card .title {
-    /* Auto layout */
+  
+  .draggable:active {
+    cursor: grabbing;
+  }
+  
+  .dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+  
+  .drop-indicator {
+    position: relative;
+  }
+  
+  .drop-indicator::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    height: 6px;
+    background: rgba(24, 160, 251, 0.1);
+    border: 1px dashed rgba(24, 160, 251, 0.4);
+    border-radius: 3px;
+    z-index: 1000;
+    box-shadow: 0 0 8px rgba(24, 160, 251, 0.2);
+  }
+  
+  .drop-indicator.top {
+    margin-top: 6px;
+  }
+  
+  .drop-indicator.top::before {
+    top: -9px;
+  }
+  
+  .drop-indicator.bottom {
+    margin-bottom: 6px;
+  }
+  
+  .drop-indicator.bottom::before {
+    bottom: -9px;
+  }
+  
+  .drag-handle {
+    width: 16px;
+    height: 16px;
+    cursor: grab;
+    margin-right: 8px;
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0px;
-    gap: 8px;
-    height: 24px;
-    /* Inside auto layout */
-    order: 0;
-    flex-grow: 0;
-  }
-  .card:hover {
-    /* light-mode/blue/blue-300 */
-    background: #8BC7F5;
-    /* light-mode/blue/blue-400 */
-    border: 1px solid #1C90ED;
-  }
-
-  .card:hover em,.card:hover strong {
-    /* light-mode/blue/blue-500 * */
-    color: #086DD7;
-  }
-  .card strong {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;;
-    font-weight: 700;
+    color: #8C8C8C;
     font-size: 12px;
-    line-height: 20px;
-    /* identical to box height, or 143% */
-    letter-spacing: 0.02em;
-    /* light-mode/blue/blue-400 */
-    color: #1C90ED;
-    transition: color 200ms ease-out 100ms;
-    height:24px;
+  }
+  
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  
+  .context-menu {
+    position: fixed;
+    background: white;
+    border: 1px solid #E5E5E5;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 120px;
+    display: none;
+  }
+  
+  .context-menu-item {
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #333;
+    cursor: pointer;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  
+  .context-menu-item:last-child {
+    border-bottom: none;
+  }
+  
+  .context-menu-item:hover {
+    background: #F5F5F5;
+  }
+  
+  .context-menu-item.delete {
+    color: #E74C3C;
+  }
+  
+  .context-menu-item.delete:hover {
+    background: #FDF2F2;
   }
 
-  .card em {
+  /* Emoji Picker Styles */
+  .emoji-picker-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10001;
+  }
+
+  .emoji-picker-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    max-height: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 10px;
-    line-height: 16px;
-    /* identical to box height, or 133% */
-    letter-spacing: 0.02em;
-    /* light-mode/blue/blue-300 */
-    color: #8BC7F5;
-    height: 24px;
-    transition: color 200ms ease-out 100ms
   }
 
+  .emoji-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #E5E5E5;
+  }
+
+  .emoji-picker-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .emoji-picker-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .emoji-picker-close:hover {
+    color: #333;
+  }
+
+  .emoji-picker-search {
+    padding: 12px 16px;
+    border-bottom: 1px solid #E5E5E5;
+  }
+
+  .emoji-picker-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+    font-size: 12px;
+    box-sizing: border-box;
+  }
+
+  .emoji-picker-search input:focus {
+    outline: none;
+    border-color: #18A0FB;
+    box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.2);
+  }
+
+  .emoji-picker-categories {
+    display: flex;
+    padding: 8px 12px;
+    border-bottom: 1px solid #E5E5E5;
+    gap: 4px;
+    overflow-x: auto;
+  }
+
+  .category-btn {
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    min-width: 32px;
+    white-space: nowrap;
+  }
+
+  .category-btn:hover {
+    background: #F0F0F0;
+  }
+
+  .category-btn.active {
+    background: #18A0FB;
+    color: white;
+  }
+
+  .emoji-picker-grid {
+    padding: 12px;
+    height: 200px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  .emoji-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+    background: none;
+    transition: background 0.2s;
+  }
+
+  .emoji-item:hover {
+    background: #F0F0F0;
+  }
+
+  .emoji-selector-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    margin-right: 12px;
+  }
+
+  .emoji-selector-btn:hover {
+    border-color: #18A0FB;
+    background: #F8FCFF;
+  }
+
+  .import-export-section {
+    margin-bottom: 24px;
+  }
+
+  .import-export-section h3 {
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .file-select-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: #6C7B7F;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 8px;
+  }
+
+  .file-select-btn:hover {
+    background: #5A6B70;
+  }
+
+  .file-name {
+    display: block;
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 8px;
+    padding: 4px 0;
+    min-height: 16px;
+  }
+
+  .export-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #F0F0F0;
+  }
+
+  .export-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .export-btn, .download-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: #18A0FB;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .export-btn:hover, .download-btn:hover {
+    background: #0F7CE8;
+  }
+
+  .download-btn {
+    background: #6C7B7F;
+  }
+
+  .download-btn:hover {
+    background: #5A6B70;
+  }
+
+  .export-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #E5E5E5;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #8C8C8C;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    color: #333;
+  }
+
+  .modal-body {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .modal-body textarea {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #E5E5E5;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    resize: none;
+    box-sizing: border-box;
+    background: #FAFAFA;
+  }
+
+  .modal-body textarea:focus {
+    outline: none;
+    border-color: #18A0FB;
+    box-shadow: 0 0 0 1px #18A0FB;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid #E5E5E5;
+    flex-shrink: 0;
+  }
+
+  .copy-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: #18A0FB;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: #0F7CE8;
+  }
+
+  .modal-close-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: #6C7B7F;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .modal-close-btn:hover {
+    background: #5A6B70;
+  }
+
+  .btn-loading {
+    display: none;
+    color: #8C8C8C;
+  }
+
+  .import-btn.loading .btn-text {
+    display: none;
+  }
+
+  .import-btn.loading .btn-loading {
+    display: inline;
+  }
 </style>
-<div id="main">
-  <!--<div class="switch">
-    <input id="dark-mode-on" class="switch__toggle" type="checkbox">
-    <label class="switch__label" for="dark-mode-on">Overwrite existing pages</label>
-  </div>-->
-  <div class="card" id="create">
-      <div class="title">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M4 7.55556L7.36842 4V4.00005L7.36847 4H9.89473H10.7369H14.1053H14.9474H16.6316L18.3158 7.11111L19.1579 8.44444L17.4738 8.44444V9.33333H16.6317V12L20.0001 12V17.3333H12.4211V12L15.7896 12V9.33333H14.9475V8.44444L14.9474 8.44444H14.1053H10.7369V11.1111V12V14.6667V15.5556V19.1111L10.7369 19.1111L12.4211 19.1111V20H4.84216V19.1111L6.52637 19.1111V15.5556V14.6667V12V11.1111V8.44444H4V7.55556ZM9.89479 13.2571V14.6667H8.55939L9.89479 13.2571ZM7.36852 15.5556L9.89479 15.5556V18.2222L7.36852 15.5556ZM7.36852 16.8126L8.70392 18.2222H7.36852V16.8126ZM9.89479 12L7.36847 14.6667V12H9.89479ZM7.71728 4.88889H9.89473V4.88895L7.36847 7.55556V5.25708L7.71728 4.88889ZM8.55939 7.55556L9.89473 6.14603V7.55556H8.55939ZM10.7369 7.55555L10.9053 7.55556L13.9368 4.88889H11.2101L10.7369 5.30517V7.55555ZM14.1053 7.55556H12.2207L14.1053 5.89781V7.55556ZM9.89473 8.44444L9.89479 8.44444V10.8889L8.04216 8.44444L9.89473 8.44444ZM5.19092 7.55556L6.52632 6.14597V7.55556H5.19092ZM7.36847 8.97847L8.98479 11.1111H7.36847V8.97847ZM14.9474 7.55556V4.88889H16.1429L17.5865 7.55556H14.9474ZM14.1052 13.7778H14.9473V15.5556H14.1052V13.7778ZM13.2632 12.8889H19.158V16.4444H13.2632V12.8889ZM17.4738 13.7778H18.3159V15.5556H17.4738V13.7778ZM15.7894 15.5556H16.6315V13.7778H15.7894V15.5556Z" fill="#086DD7"/>
-        </svg>
-        <strong>Scaffold</strong>
-      </div>
-      <em>Generates default page layout</em>
-  </div>
-  <div class="card" id="storybook">
-    <div class="title">
-      <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15.4227 3.18318L15.335 5.21624C15.3322 5.33041 15.4598 5.40071 15.5481 5.33041L16.3172 4.72977L16.9702 5.25392C17.0552 5.31241 17.1691 5.25392 17.1746 5.14819L17.101 3.08026L18.069 3.00434C18.5716 2.96891 19 3.38227 19 3.90361V20.1017C19 20.6175 18.5825 21.0274 18.0832 21.001L6.38111 20.4622C5.92707 20.442 5.56078 20.0641 5.54661 19.5922L5.00154 4.74439C4.9732 4.24667 5.33948 3.81869 5.82187 3.79226L15.4145 3.16856L15.4227 3.18318ZM13.1917 9.97861C13.1917 10.3301 15.4887 10.1575 15.8004 9.91731C15.8004 7.51813 14.5511 6.24993 12.2689 6.24993C9.98074 6.24993 8.7091 7.54175 8.7091 9.46908C8.7091 12.8052 13.0696 12.8637 13.0696 14.6859C13.0696 15.2134 12.8369 15.512 12.306 15.512C11.6078 15.512 11.3238 15.1459 11.3609 13.8923C11.3609 13.6229 8.7091 13.5318 8.62134 13.8923C8.42566 16.9152 10.2424 17.7909 12.3262 17.7909C14.356 17.7909 15.94 16.6751 15.94 14.6566C15.94 11.0803 11.5058 11.1765 11.5058 9.40778C11.5058 8.68116 12.0313 8.58443 12.3262 8.58443C12.6554 8.58443 13.2348 8.6373 13.1923 9.9848L13.1917 9.97861Z" fill="#1C90ED"/>
-      </svg>
-      <strong>View Storybook</strong>
+
+<div class="tabs">
+  <button class="tab active" data-tab="scaffold">Scaffold</button>
+  <button class="tab" data-tab="settings">Settings</button>
+  <button class="tab" data-tab="import-export">Import/Export</button>
+</div>
+
+<div class="tab-content active" id="scaffold-tab">
+  <div class="scrollable-content">
+    <div class="layout-list" id="layout-list">
+      <!-- Layout items will be populated by JavaScript -->
     </div>
   </div>
-<!--<button class="button button--primary" id="create">Scaffold <span>Generates default page layout</span></button>-->
+  <div class="bottom-buttons">
+    <button class="create-btn" id="create-btn">Create</button>
+  </div>
 </div>
+
+<div class="tab-content" id="settings-tab">
+  <div class="scrollable-content">
+    <div class="layout-editor" id="layout-editor">
+      <!-- Editable layout items will be populated by JavaScript -->
+    </div>
+    
+    <div class="add-buttons">
+      <button class="add-page-btn" id="add-page-btn">+ Add Page</button>
+      <button class="add-separator-btn" id="add-separator-btn">+ Add Separator</button>
+    </div>
+  </div>
+  
+  <div class="bottom-buttons">
+    <div class="button-group">
+      <button class="reset-btn" id="reset-btn">Reset</button>
+      <button class="save-btn" id="save-btn">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="import-export-tab">
+  <div class="scrollable-content">
+    <div class="import-export-section">
+      <h3>Import Layout</h3>
+      
+      <div class="input-group">
+        <label for="import-url">Import from URL</label>
+        <input type="url" id="import-url" placeholder="https://example.com/layout.json">
+        <button class="import-btn" id="import-url-btn">
+          <span class="btn-text">Import</span>
+          <span class="btn-loading" style="display: none;">Loading...</span>
+        </button>
+      </div>
+      
+      <div class="input-group">
+        <label for="import-file">Import from File</label>
+        <input type="file" id="import-file" accept=".json" style="display: none;">
+        <button class="file-select-btn" id="file-select-btn">Choose File</button>
+        <span class="file-name" id="file-name"></span>
+        <button class="import-btn" id="import-file-btn" style="display: none;">
+          <span class="btn-text">Import</span>
+          <span class="btn-loading" style="display: none;">Loading...</span>
+        </button>
+      </div>
+      
+      <div class="export-section">
+        <h3>Export Layout</h3>
+        <div class="export-buttons">
+          <button class="export-btn" id="export-btn">View JSON</button>
+          <button class="download-btn" id="download-btn">Download JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="export-modal" id="export-modal" style="display: none;">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Export Layout</h3>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="export-json" readonly></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="copy-btn" id="copy-btn">Copy to Clipboard</button>
+      <button class="modal-close-btn" id="modal-close-btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="context-menu" id="context-menu">
+  <div class="context-menu-item" id="duplicate-item">Duplicate</div>
+  <div class="context-menu-item delete" id="delete-item">Delete</div>
+</div>
+
+<div class="emoji-picker-modal" id="emoji-picker-modal" style="display: none;">
+  <div class="modal-overlay"></div>
+  <div class="emoji-picker-content">
+    <div class="emoji-picker-header">
+      <h3>Choose Emoji</h3>
+      <button class="emoji-picker-close" id="emoji-picker-close">&times;</button>
+    </div>
+    <div class="emoji-picker-search">
+      <input type="text" id="emoji-search" placeholder="Search emojis..." />
+    </div>
+    <div class="emoji-picker-categories">
+      <button class="category-btn active" data-category="all">All</button>
+      <button class="category-btn" data-category="faces">😀</button>
+      <button class="category-btn" data-category="animals">🐶</button>
+      <button class="category-btn" data-category="food">🍏</button>
+      <button class="category-btn" data-category="activities">⚽</button>
+      <button class="category-btn" data-category="travel">🚗</button>
+      <button class="category-btn" data-category="objects">⌚</button>
+      <button class="category-btn" data-category="symbols">❤️</button>
+    </div>
+    <div class="emoji-picker-grid" id="emoji-picker-grid">
+      <!-- Emojis will be populated here -->
+    </div>
+  </div>
+</div>
+
 <script>
-	document.getElementById('create').onclick = () => {
-		parent.postMessage({ pluginMessage: {type: 'createPages'} }, '*');
-	}
-  document.getElementById('storybook').onclick = () => {
-    window.open('https://storybook.internal.dckr.io/?path=%2Fstory%2Fintroduction--page&utm_source=figma-crane', '_blank');
-	}
+  // Original default layout data (for reset functionality)
+  const originalLayoutData = [
+    { emoji: '🚧', label: 'Task or feature name', type: 'page' },
+    { emoji: '─', label: '─────────────', type: 'separator' },
+    { emoji: '🧩', label: 'Components', type: 'page' },
+    { emoji: '📐', label: 'Specs', type: 'page' },
+    { emoji: '─', label: '─────────────', type: 'separator' },
+    { emoji: '🧠', label: 'Moodboard', type: 'page' },
+    { emoji: '💡', label: 'Ideas', type: 'page' },
+    { emoji: '☣️', label: 'Discarded', type: 'page' },
+    { emoji: '─', label: '─────────────', type: 'separator' },
+    { emoji: '📄', label: 'Cover', type: 'page' }
+  ];
+
+  // Current layout data (can be modified)
+  let layoutData = [...originalLayoutData];
+
+  // Emoji data with names and categories for search functionality
+  const emojiData = [
+    // Popular/Common emojis
+    { emoji: '😀', name: 'grinning face', category: 'faces', keywords: ['happy', 'smile', 'grin'] },
+    { emoji: '😃', name: 'grinning face with big eyes', category: 'faces', keywords: ['happy', 'smile', 'joy'] },
+    { emoji: '😄', name: 'grinning face with smiling eyes', category: 'faces', keywords: ['happy', 'smile', 'laugh'] },
+    { emoji: '😁', name: 'beaming face with smiling eyes', category: 'faces', keywords: ['happy', 'smile', 'grin'] },
+    { emoji: '😊', name: 'smiling face with smiling eyes', category: 'faces', keywords: ['happy', 'smile', 'blush'] },
+    { emoji: '🥰', name: 'smiling face with hearts', category: 'faces', keywords: ['love', 'hearts', 'adore'] },
+    { emoji: '😍', name: 'smiling face with heart-eyes', category: 'faces', keywords: ['love', 'heart', 'eyes'] },
+    { emoji: '🤩', name: 'star-struck', category: 'faces', keywords: ['star', 'eyes', 'amazed'] },
+    { emoji: '😘', name: 'face blowing a kiss', category: 'faces', keywords: ['kiss', 'love', 'heart'] },
+    { emoji: '😋', name: 'face savoring food', category: 'faces', keywords: ['tongue', 'taste', 'delicious'] },
+    { emoji: '🤔', name: 'thinking face', category: 'faces', keywords: ['think', 'consider', 'hmm'] },
+    { emoji: '😎', name: 'smiling face with sunglasses', category: 'faces', keywords: ['cool', 'sunglasses', 'awesome'] },
+    { emoji: '🤓', name: 'nerd face', category: 'faces', keywords: ['nerd', 'glasses', 'geek'] },
+    { emoji: '😴', name: 'sleeping face', category: 'faces', keywords: ['sleep', 'tired', 'zzz'] },
+    { emoji: '🎉', name: 'party popper', category: 'symbols', keywords: ['party', 'celebration', 'confetti'] },
+    
+    // Animals
+    { emoji: '🐶', name: 'dog face', category: 'animals', keywords: ['dog', 'puppy', 'pet'] },
+    { emoji: '🐱', name: 'cat face', category: 'animals', keywords: ['cat', 'kitten', 'pet'] },
+    { emoji: '🐭', name: 'mouse face', category: 'animals', keywords: ['mouse', 'rodent'] },
+    { emoji: '🐹', name: 'hamster', category: 'animals', keywords: ['hamster', 'pet', 'rodent'] },
+    { emoji: '🐰', name: 'rabbit face', category: 'animals', keywords: ['rabbit', 'bunny', 'easter'] },
+    { emoji: '🦊', name: 'fox', category: 'animals', keywords: ['fox', 'clever', 'orange'] },
+    { emoji: '🐻', name: 'bear', category: 'animals', keywords: ['bear', 'teddy'] },
+    { emoji: '🐼', name: 'panda', category: 'animals', keywords: ['panda', 'bear', 'china'] },
+    { emoji: '🐨', name: 'koala', category: 'animals', keywords: ['koala', 'australia'] },
+    { emoji: '🦁', name: 'lion', category: 'animals', keywords: ['lion', 'king', 'mane'] },
+    { emoji: '🐸', name: 'frog', category: 'animals', keywords: ['frog', 'green', 'amphibian'] },
+    { emoji: '🐵', name: 'monkey face', category: 'animals', keywords: ['monkey', 'ape', 'banana'] },
+    { emoji: '🦄', name: 'unicorn', category: 'animals', keywords: ['unicorn', 'magical', 'horn'] },
+    { emoji: '🐝', name: 'honeybee', category: 'animals', keywords: ['bee', 'honey', 'buzz'] },
+    { emoji: '🦋', name: 'butterfly', category: 'animals', keywords: ['butterfly', 'beautiful', 'wings'] },
+    { emoji: '🐞', name: 'lady beetle', category: 'animals', keywords: ['ladybug', 'insect', 'red'] },
+    { emoji: '🐢', name: 'turtle', category: 'animals', keywords: ['turtle', 'slow', 'shell'] },
+    { emoji: '🐍', name: 'snake', category: 'animals', keywords: ['snake', 'reptile'] },
+    { emoji: '🦖', name: 'T-Rex', category: 'animals', keywords: ['dinosaur', 'trex', 'extinct'] },
+    { emoji: '🐙', name: 'octopus', category: 'animals', keywords: ['octopus', 'sea', 'tentacles'] },
+    
+    // Food
+    { emoji: '🍏', name: 'green apple', category: 'food', keywords: ['apple', 'fruit', 'green'] },
+    { emoji: '🍎', name: 'red apple', category: 'food', keywords: ['apple', 'fruit', 'red'] },
+    { emoji: '🍌', name: 'banana', category: 'food', keywords: ['banana', 'fruit', 'yellow'] },
+    { emoji: '🍉', name: 'watermelon', category: 'food', keywords: ['watermelon', 'fruit', 'summer'] },
+    { emoji: '🍇', name: 'grapes', category: 'food', keywords: ['grapes', 'fruit', 'wine'] },
+    { emoji: '🍓', name: 'strawberry', category: 'food', keywords: ['strawberry', 'fruit', 'berry'] },
+    { emoji: '🍑', name: 'peach', category: 'food', keywords: ['peach', 'fruit'] },
+    { emoji: '🍍', name: 'pineapple', category: 'food', keywords: ['pineapple', 'fruit', 'tropical'] },
+    { emoji: '🥝', name: 'kiwi fruit', category: 'food', keywords: ['kiwi', 'fruit', 'green'] },
+    { emoji: '🍅', name: 'tomato', category: 'food', keywords: ['tomato', 'vegetable', 'red'] },
+    { emoji: '🥑', name: 'avocado', category: 'food', keywords: ['avocado', 'fruit', 'green'] },
+    { emoji: '🌽', name: 'ear of corn', category: 'food', keywords: ['corn', 'vegetable', 'yellow'] },
+    { emoji: '🥕', name: 'carrot', category: 'food', keywords: ['carrot', 'vegetable', 'orange'] },
+    { emoji: '🍞', name: 'bread', category: 'food', keywords: ['bread', 'loaf', 'bakery'] },
+    { emoji: '🧀', name: 'cheese wedge', category: 'food', keywords: ['cheese', 'dairy', 'yellow'] },
+    { emoji: '🍔', name: 'hamburger', category: 'food', keywords: ['burger', 'hamburger', 'fast food'] },
+    { emoji: '🍟', name: 'french fries', category: 'food', keywords: ['fries', 'potato', 'fast food'] },
+    { emoji: '🍕', name: 'pizza', category: 'food', keywords: ['pizza', 'slice', 'italian'] },
+    { emoji: '🌭', name: 'hot dog', category: 'food', keywords: ['hot dog', 'sausage'] },
+    { emoji: '🎂', name: 'birthday cake', category: 'food', keywords: ['cake', 'birthday', 'celebration'] },
+    
+    // Activities
+    { emoji: '⚽', name: 'soccer ball', category: 'activities', keywords: ['soccer', 'football', 'ball'] },
+    { emoji: '🏀', name: 'basketball', category: 'activities', keywords: ['basketball', 'ball', 'sport'] },
+    { emoji: '🏈', name: 'american football', category: 'activities', keywords: ['football', 'american', 'ball'] },
+    { emoji: '⚾', name: 'baseball', category: 'activities', keywords: ['baseball', 'ball', 'sport'] },
+    { emoji: '🎾', name: 'tennis', category: 'activities', keywords: ['tennis', 'ball', 'racket'] },
+    { emoji: '🏐', name: 'volleyball', category: 'activities', keywords: ['volleyball', 'ball', 'sport'] },
+    { emoji: '🎱', name: 'pool 8 ball', category: 'activities', keywords: ['billiards', 'pool', '8ball'] },
+    { emoji: '🏓', name: 'ping pong', category: 'activities', keywords: ['ping pong', 'table tennis'] },
+    { emoji: '🏸', name: 'badminton', category: 'activities', keywords: ['badminton', 'racket', 'shuttlecock'] },
+    { emoji: '🥅', name: 'goal net', category: 'activities', keywords: ['goal', 'net', 'soccer'] },
+    { emoji: '🎯', name: 'bullseye', category: 'activities', keywords: ['target', 'bullseye', 'dart'] },
+    { emoji: '🏹', name: 'bow and arrow', category: 'activities', keywords: ['bow', 'arrow', 'archery'] },
+    { emoji: '🎣', name: 'fishing pole', category: 'activities', keywords: ['fishing', 'pole', 'fish'] },
+    { emoji: '🥊', name: 'boxing glove', category: 'activities', keywords: ['boxing', 'glove', 'fight'] },
+    { emoji: '🎮', name: 'video game', category: 'activities', keywords: ['game', 'controller', 'gaming'] },
+    { emoji: '🎲', name: 'game die', category: 'activities', keywords: ['dice', 'game', 'random'] },
+    { emoji: '🎪', name: 'circus tent', category: 'activities', keywords: ['circus', 'tent', 'entertainment'] },
+    { emoji: '🎨', name: 'artist palette', category: 'activities', keywords: ['art', 'paint', 'palette'] },
+    { emoji: '🎭', name: 'performing arts', category: 'activities', keywords: ['theater', 'drama', 'masks'] },
+    { emoji: '🎵', name: 'musical note', category: 'activities', keywords: ['music', 'note', 'song'] },
+    
+    // Travel
+    { emoji: '🚗', name: 'automobile', category: 'travel', keywords: ['car', 'auto', 'vehicle'] },
+    { emoji: '🚕', name: 'taxi', category: 'travel', keywords: ['taxi', 'cab', 'yellow'] },
+    { emoji: '🚌', name: 'bus', category: 'travel', keywords: ['bus', 'public', 'transport'] },
+    { emoji: '🚎', name: 'trolleybus', category: 'travel', keywords: ['trolley', 'bus', 'transport'] },
+    { emoji: '🏎', name: 'racing car', category: 'travel', keywords: ['race', 'car', 'fast'] },
+    { emoji: '🚓', name: 'police car', category: 'travel', keywords: ['police', 'car', 'cop'] },
+    { emoji: '🚑', name: 'ambulance', category: 'travel', keywords: ['ambulance', 'medical', 'emergency'] },
+    { emoji: '🚒', name: 'fire engine', category: 'travel', keywords: ['fire', 'truck', 'emergency'] },
+    { emoji: '🚚', name: 'delivery truck', category: 'travel', keywords: ['truck', 'delivery', 'cargo'] },
+    { emoji: '🚲', name: 'bicycle', category: 'travel', keywords: ['bike', 'bicycle', 'cycle'] },
+    { emoji: '✈️', name: 'airplane', category: 'travel', keywords: ['plane', 'airplane', 'flight'] },
+    { emoji: '🚀', name: 'rocket', category: 'travel', keywords: ['rocket', 'space', 'launch'] },
+    { emoji: '🚁', name: 'helicopter', category: 'travel', keywords: ['helicopter', 'chopper'] },
+    { emoji: '⛵', name: 'sailboat', category: 'travel', keywords: ['boat', 'sail', 'water'] },
+    { emoji: '🚢', name: 'ship', category: 'travel', keywords: ['ship', 'boat', 'cruise'] },
+    { emoji: '🏠', name: 'house', category: 'travel', keywords: ['house', 'home', 'building'] },
+    { emoji: '🏢', name: 'office building', category: 'travel', keywords: ['office', 'building', 'work'] },
+    { emoji: '🏥', name: 'hospital', category: 'travel', keywords: ['hospital', 'medical', 'health'] },
+    { emoji: '🏫', name: 'school', category: 'travel', keywords: ['school', 'education', 'learn'] },
+    { emoji: '⛪', name: 'church', category: 'travel', keywords: ['church', 'religion', 'worship'] },
+    
+    // Objects
+    { emoji: '📱', name: 'mobile phone', category: 'objects', keywords: ['phone', 'mobile', 'cell'] },
+    { emoji: '💻', name: 'laptop', category: 'objects', keywords: ['laptop', 'computer', 'pc'] },
+    { emoji: '⌨️', name: 'keyboard', category: 'objects', keywords: ['keyboard', 'type', 'computer'] },
+    { emoji: '🖥', name: 'desktop computer', category: 'objects', keywords: ['computer', 'desktop', 'monitor'] },
+    { emoji: '🖨', name: 'printer', category: 'objects', keywords: ['printer', 'print', 'paper'] },
+    { emoji: '📷', name: 'camera', category: 'objects', keywords: ['camera', 'photo', 'picture'] },
+    { emoji: '📺', name: 'television', category: 'objects', keywords: ['tv', 'television', 'screen'] },
+    { emoji: '📻', name: 'radio', category: 'objects', keywords: ['radio', 'music', 'broadcast'] },
+    { emoji: '⏰', name: 'alarm clock', category: 'objects', keywords: ['clock', 'alarm', 'time'] },
+    { emoji: '💡', name: 'light bulb', category: 'objects', keywords: ['bulb', 'light', 'idea'] },
+    { emoji: '🔦', name: 'flashlight', category: 'objects', keywords: ['flashlight', 'torch', 'light'] },
+    { emoji: '🕯', name: 'candle', category: 'objects', keywords: ['candle', 'flame', 'light'] },
+    { emoji: '🔧', name: 'wrench', category: 'objects', keywords: ['wrench', 'tool', 'fix'] },
+    { emoji: '🔨', name: 'hammer', category: 'objects', keywords: ['hammer', 'tool', 'nail'] },
+    { emoji: '⚙️', name: 'gear', category: 'objects', keywords: ['gear', 'cog', 'settings'] },
+    { emoji: '🔩', name: 'nut and bolt', category: 'objects', keywords: ['bolt', 'nut', 'screw'] },
+    { emoji: '🔑', name: 'key', category: 'objects', keywords: ['key', 'lock', 'unlock'] },
+    { emoji: '🔒', name: 'locked', category: 'objects', keywords: ['lock', 'secure', 'private'] },
+    { emoji: '🔓', name: 'unlocked', category: 'objects', keywords: ['unlock', 'open', 'access'] },
+    { emoji: '📝', name: 'memo', category: 'objects', keywords: ['memo', 'note', 'write'] },
+    
+    // Symbols
+    { emoji: '❤️', name: 'red heart', category: 'symbols', keywords: ['heart', 'love', 'red'] },
+    { emoji: '💛', name: 'yellow heart', category: 'symbols', keywords: ['heart', 'love', 'yellow'] },
+    { emoji: '💚', name: 'green heart', category: 'symbols', keywords: ['heart', 'love', 'green'] },
+    { emoji: '💙', name: 'blue heart', category: 'symbols', keywords: ['heart', 'love', 'blue'] },
+    { emoji: '💜', name: 'purple heart', category: 'symbols', keywords: ['heart', 'love', 'purple'] },
+    { emoji: '⭐', name: 'star', category: 'symbols', keywords: ['star', 'favorite', 'rating'] },
+    { emoji: '🌟', name: 'glowing star', category: 'symbols', keywords: ['star', 'glow', 'sparkle'] },
+    { emoji: '✅', name: 'check mark', category: 'symbols', keywords: ['check', 'mark', 'correct'] },
+    { emoji: '❌', name: 'cross mark', category: 'symbols', keywords: ['cross', 'x', 'wrong'] },
+    { emoji: '⚠️', name: 'warning', category: 'symbols', keywords: ['warning', 'caution', 'alert'] },
+    { emoji: '🚧', name: 'construction', category: 'symbols', keywords: ['construction', 'work', 'caution'] },
+    { emoji: '🔥', name: 'fire', category: 'symbols', keywords: ['fire', 'flame', 'hot'] },
+    { emoji: '💧', name: 'droplet', category: 'symbols', keywords: ['water', 'drop', 'liquid'] },
+    { emoji: '⚡', name: 'high voltage', category: 'symbols', keywords: ['lightning', 'electricity', 'power'] },
+    { emoji: '💯', name: 'hundred points', category: 'symbols', keywords: ['hundred', '100', 'perfect'] },
+    { emoji: '✨', name: 'sparkles', category: 'symbols', keywords: ['sparkle', 'magic', 'shine'] },
+    { emoji: '🌈', name: 'rainbow', category: 'symbols', keywords: ['rainbow', 'colors', 'pride'] },
+    { emoji: '☀️', name: 'sun', category: 'symbols', keywords: ['sun', 'sunny', 'bright'] },
+    { emoji: '🧩', name: 'puzzle piece', category: 'symbols', keywords: ['puzzle', 'piece', 'component'] },
+    { emoji: '📄', name: 'page facing up', category: 'symbols', keywords: ['page', 'document', 'paper'] },
+    { emoji: '📐', name: 'triangular ruler', category: 'symbols', keywords: ['ruler', 'triangle', 'measure'] },
+    { emoji: '🧠', name: 'brain', category: 'symbols', keywords: ['brain', 'mind', 'think'] },
+    { emoji: '☣️', name: 'biohazard', category: 'symbols', keywords: ['biohazard', 'danger', 'toxic'] },
+    { emoji: '🧪', name: 'test tube', category: 'symbols', keywords: ['test', 'tube', 'science'] },
+    { emoji: '📊', name: 'bar chart', category: 'symbols', keywords: ['chart', 'graph', 'data'] },
+    { emoji: '─', name: 'separator', category: 'symbols', keywords: ['separator', 'line', 'divider'] }
+  ];
+
+  // Create emojiOptions array for backwards compatibility
+  const emojiOptions = emojiData.map(item => item.emoji);
+
+  // Store existing pages from Figma
+  let existingPages = [];
+
+  // Context menu variables
+  let contextMenuTargetIndex = null;
+  const contextMenu = document.getElementById('context-menu');
+
+  // Context menu functions
+  function showContextMenu(x, y, index) {
+    contextMenuTargetIndex = index;
+    contextMenu.style.display = 'block';
+    
+    // Get menu dimensions
+    const menuRect = contextMenu.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Adjust position if menu goes beyond viewport
+    let adjustedX = x;
+    let adjustedY = y;
+    
+    if (x + menuRect.width > viewportWidth) {
+      adjustedX = x - menuRect.width;
+    }
+    
+    if (y + menuRect.height > viewportHeight) {
+      adjustedY = y - menuRect.height;
+    }
+    
+    contextMenu.style.left = adjustedX + 'px';
+    contextMenu.style.top = adjustedY + 'px';
+  }
+
+  function hideContextMenu() {
+    contextMenu.style.display = 'none';
+    contextMenuTargetIndex = null;
+  }
+
+  // Hide context menu when clicking outside or pressing escape
+  document.addEventListener('click', (e) => {
+    if (!contextMenu.contains(e.target)) {
+      hideContextMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && contextMenu.style.display === 'block') {
+      hideContextMenu();
+    }
+  });
+
+  // Tab switching functionality
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = tab.dataset.tab;
+      
+      // Update active tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // Update active content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(tabName + '-tab').classList.add('active');
+      
+      // Request existing pages when switching to scaffold tab
+      if (tabName === 'scaffold') {
+        parent.postMessage({ 
+          pluginMessage: { 
+            type: 'getExistingPages'
+          } 
+        }, '*');
+      }
+    });
+  });
+
+  // Render layout list in scaffold tab
+  function renderLayoutList() {
+    const layoutList = document.getElementById('layout-list');
+    layoutList.innerHTML = '';
+    
+    layoutData.forEach((item, index) => {
+      if (item.type === 'separator') {
+        const div = document.createElement('div');
+        div.className = 'separator-item-with-checkbox';
+        
+        // Check if separator page "---" already exists
+        const isExisting = existingPages.includes('---');
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checkbox';
+        checkbox.id = `separator-${index}`;
+        checkbox.checked = !isExisting; // Default checked if not existing
+        checkbox.disabled = isExisting;
+        
+        if (isExisting) {
+          div.style.opacity = '0.5';
+        }
+        
+        div.appendChild(checkbox);
+        
+        // Add separator line
+        const hr = document.createElement('hr');
+        hr.className = 'separator-hr';
+        div.appendChild(hr);
+        
+        layoutList.appendChild(div);
+      } else {
+        const div = document.createElement('div');
+        div.className = 'layout-item';
+        
+        // Check if this page already exists in Figma
+        const pageName = item.emoji + ' - ' + item.label;
+        const isExisting = existingPages.includes(pageName);
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checkbox';
+        checkbox.id = `page-${index}`;
+        checkbox.checked = !isExisting; // Default checked if not existing
+        checkbox.disabled = isExisting;
+        
+        if (isExisting) {
+          div.classList.add('existing');
+        }
+        
+        div.innerHTML = `
+          <span class="emoji">${item.emoji}</span>
+          <span>${item.label}</span>
+        `;
+        
+        // Insert checkbox at the beginning
+        div.insertBefore(checkbox, div.firstChild);
+        
+        layoutList.appendChild(div);
+      }
+    });
+  }
+
+  // Drag and drop variables
+  let draggedIndex = null;
+  let dropPosition = null; // 'before' or 'after'
+  let dropTargetIndex = null;
+
+  // Helper function to clear all drop indicators
+  function clearDropIndicators() {
+    const items = document.querySelectorAll('.draggable');
+    items.forEach(item => {
+      item.classList.remove('drop-indicator', 'top', 'bottom');
+    });
+  }
+
+  // Helper function to show drop indicator
+  function showDropIndicator(element, position) {
+    clearDropIndicators();
+    element.classList.add('drop-indicator', position);
+  }
+
+  // Render editable layout in settings tab
+  function renderLayoutEditor() {
+    const layoutEditor = document.getElementById('layout-editor');
+    layoutEditor.innerHTML = '';
+    
+    layoutData.forEach((item, index) => {
+      if (item.type === 'separator') {
+        const div = document.createElement('div');
+        div.className = 'separator-item draggable';
+        div.draggable = true;
+        div.dataset.index = index;
+        
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'drag-handle';
+        dragHandle.innerHTML = '⋮⋮';
+        
+        // Prevent context menu on drag handle
+        dragHandle.addEventListener('contextmenu', (e) => {
+          e.stopPropagation();
+        });
+        
+        const label = document.createElement('span');
+        label.className = 'separator-label';
+        label.textContent = 'Separator (creates "---" page in Figma)';
+        
+        div.appendChild(dragHandle);
+        div.appendChild(label);
+        
+        // Add drag and drop event listeners
+        addDragListeners(div, index);
+        
+        // Add right-click context menu
+        div.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          showContextMenu(e.clientX, e.clientY, index);
+        });
+        
+        layoutEditor.appendChild(div);
+      } else {
+        const div = document.createElement('div');
+        div.className = 'editable-item draggable';
+        div.draggable = true;
+        div.dataset.index = index;
+        
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'drag-handle';
+        dragHandle.innerHTML = '⋮⋮';
+        
+        // Prevent context menu on drag handle
+        dragHandle.addEventListener('contextmenu', (e) => {
+          e.stopPropagation();
+        });
+        
+        const emojiBtn = document.createElement('button');
+        emojiBtn.className = 'emoji-selector-btn';
+        emojiBtn.textContent = item.emoji;
+        emojiBtn.type = 'button';
+        
+        // Open emoji picker when clicked
+        emojiBtn.addEventListener('click', () => {
+          openEmojiPicker((selectedEmoji) => {
+            const currentIndex = parseInt(div.dataset.index);
+            layoutData[currentIndex].emoji = selectedEmoji;
+            emojiBtn.textContent = selectedEmoji;
+            renderLayoutList(); // Update scaffold tab
+          });
+        });
+        
+        const labelInput = document.createElement('input');
+        labelInput.className = 'label-input';
+        labelInput.type = 'text';
+        labelInput.value = item.label;
+        
+        labelInput.addEventListener('input', () => {
+          const currentIndex = parseInt(div.dataset.index);
+          layoutData[currentIndex].label = labelInput.value;
+          renderLayoutList(); // Update scaffold tab
+        });
+        
+        div.appendChild(dragHandle);
+        div.appendChild(emojiBtn);
+        div.appendChild(labelInput);
+        
+        // Add drag and drop event listeners
+        addDragListeners(div, index);
+        
+        // Add right-click context menu
+        div.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          showContextMenu(e.clientX, e.clientY, index);
+        });
+        
+        layoutEditor.appendChild(div);
+      }
+    });
+  }
+
+  // Add drag and drop event listeners to an element
+  function addDragListeners(element, index) {
+    element.addEventListener('dragstart', (e) => {
+      draggedIndex = index;
+      element.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', element.outerHTML);
+    });
+
+    element.addEventListener('dragend', (e) => {
+      element.classList.remove('dragging');
+      clearDropIndicators();
+      draggedIndex = null;
+      dropPosition = null;
+      dropTargetIndex = null;
+    });
+
+    element.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      
+      if (draggedIndex === null) return;
+      
+      const rect = element.getBoundingClientRect();
+      const mouseY = e.clientY;
+      const elementMiddle = rect.top + rect.height / 2;
+      
+      const currentIndex = parseInt(element.dataset.index);
+      dropTargetIndex = currentIndex;
+      
+      if (mouseY < elementMiddle) {
+        // Dragging over top half - insert before
+        dropPosition = 'before';
+        showDropIndicator(element, 'top');
+      } else {
+        // Dragging over bottom half - insert after
+        dropPosition = 'after';
+        showDropIndicator(element, 'bottom');
+      }
+    });
+
+    element.addEventListener('dragleave', (e) => {
+      // Only clear if we're actually leaving the element (not entering a child)
+      if (!element.contains(e.relatedTarget)) {
+        clearDropIndicators();
+        dropPosition = null;
+        dropTargetIndex = null;
+      }
+    });
+
+    element.addEventListener('drop', (e) => {
+      e.preventDefault();
+      clearDropIndicators();
+      
+      if (draggedIndex !== null && dropTargetIndex !== null && dropPosition !== null) {
+        let insertIndex;
+        
+        if (dropPosition === 'before') {
+          insertIndex = dropTargetIndex;
+        } else { // 'after'
+          insertIndex = dropTargetIndex + 1;
+        }
+        
+        // Adjust insert index if dragging from above
+        if (draggedIndex < insertIndex) {
+          insertIndex--;
+        }
+        
+        if (draggedIndex !== insertIndex) {
+          // Reorder the array
+          const draggedItem = layoutData[draggedIndex];
+          layoutData.splice(draggedIndex, 1);
+          layoutData.splice(insertIndex, 0, draggedItem);
+          
+          // Re-render both tabs
+          renderLayoutEditor();
+          renderLayoutList();
+        }
+        
+        dropPosition = null;
+        dropTargetIndex = null;
+      }
+    });
+  }
+
+  // Message handler for plugin responses
+  window.addEventListener('message', (event) => {
+    if (event.data.pluginMessage?.type === 'layoutLoaded') {
+      layoutData = event.data.pluginMessage.layoutData;
+      renderLayoutList();
+      renderLayoutEditor();
+    } else if (event.data.pluginMessage?.type === 'existingPagesLoaded') {
+      existingPages = event.data.pluginMessage.existingPages;
+      renderLayoutList();
+    }
+  });
+
+  // Initialize the interface
+  renderLayoutList();
+  renderLayoutEditor();
+
+  // Load saved layout data and existing pages on startup
+  parent.postMessage({ 
+    pluginMessage: { 
+      type: 'loadLayout'
+    } 
+  }, '*');
+
+  parent.postMessage({ 
+    pluginMessage: { 
+      type: 'getExistingPages'
+    } 
+  }, '*');
+
+  // Create button functionality
+  document.getElementById('create-btn').addEventListener('click', () => {
+    // Get selected pages only
+    const selectedPages = [];
+    
+    layoutData.forEach((item, index) => {
+      let checkbox;
+      if (item.type === 'separator') {
+        checkbox = document.getElementById(`separator-${index}`);
+      } else {
+        checkbox = document.getElementById(`page-${index}`);
+      }
+      
+      if (checkbox && checkbox.checked) {
+        selectedPages.push(item);
+      }
+    });
+    
+    if (selectedPages.length === 0) {
+      alert('Please select at least one page to create.');
+      return;
+    }
+    
+    parent.postMessage({ 
+      pluginMessage: { 
+        type: 'createPages',
+        layoutData: selectedPages
+      } 
+    }, '*');
+  });
+
+
+  // Save functionality
+  document.getElementById('save-btn').addEventListener('click', () => {
+    parent.postMessage({ 
+      pluginMessage: { 
+        type: 'saveLayout',
+        layoutData: layoutData
+      } 
+    }, '*');
+  });
+
+  // Reset functionality
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset to the original layout? This will discard all your changes.')) {
+      layoutData = [...originalLayoutData];
+      renderLayoutList();
+      renderLayoutEditor();
+    }
+  });
+
+  // Add page functionality
+  document.getElementById('add-page-btn').addEventListener('click', () => {
+    const newPage = {
+      emoji: '📄',
+      label: 'New Page',
+      type: 'page'
+    };
+    layoutData.push(newPage);
+    renderLayoutList();
+    renderLayoutEditor();
+  });
+
+  // Add separator functionality
+  document.getElementById('add-separator-btn').addEventListener('click', () => {
+    const newSeparator = {
+      emoji: '─',
+      label: '─────────────',
+      type: 'separator'
+    };
+    layoutData.push(newSeparator);
+    renderLayoutList();
+    renderLayoutEditor();
+  });
+
+  // Context menu functionality
+  document.getElementById('duplicate-item').addEventListener('click', () => {
+    if (contextMenuTargetIndex !== null) {
+      const itemToDuplicate = { ...layoutData[contextMenuTargetIndex] };
+      // Insert the duplicate right after the original
+      layoutData.splice(contextMenuTargetIndex + 1, 0, itemToDuplicate);
+      renderLayoutList();
+      renderLayoutEditor();
+      hideContextMenu();
+    }
+  });
+
+  document.getElementById('delete-item').addEventListener('click', () => {
+    if (contextMenuTargetIndex !== null) {
+      if (confirm('Are you sure you want to delete this item?')) {
+        layoutData.splice(contextMenuTargetIndex, 1);
+        renderLayoutList();
+        renderLayoutEditor();
+      }
+      hideContextMenu();
+    }
+  });
+
+  // Import/Export Tab Functionality
+  
+  // File selection functionality
+  document.getElementById('file-select-btn').addEventListener('click', () => {
+    document.getElementById('import-file').click();
+  });
+
+  document.getElementById('import-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const fileName = document.getElementById('file-name');
+    const importBtn = document.getElementById('import-file-btn');
+    
+    if (file) {
+      fileName.textContent = file.name;
+      importBtn.style.display = 'block';
+    } else {
+      fileName.textContent = '';
+      importBtn.style.display = 'none';
+    }
+  });
+
+  // Helper function to show confirmation dialog
+  function showImportConfirmation(callback) {
+    if (confirm('Do you want to replace the actual layout?')) {
+      callback();
+    }
+  }
+
+  // Helper function to redirect to settings tab
+  function redirectToSettings() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="settings"]').classList.add('active');
+    
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    document.getElementById('settings-tab').classList.add('active');
+  }
+
+  // URL Import functionality
+  document.getElementById('import-url-btn').addEventListener('click', async () => {
+    const url = document.getElementById('import-url').value;
+    if (!url) return;
+
+    const button = document.getElementById('import-url-btn');
+    button.classList.add('loading');
+    
+    try {
+      const response = await fetch(url);
+      const importedData = await response.json();
+      
+      button.classList.remove('loading');
+      
+      if (Array.isArray(importedData) && importedData.every(item => item.emoji && item.label)) {
+        showImportConfirmation(() => {
+          // Ensure imported data has type property, default to 'page' if missing
+          layoutData = importedData.map(item => ({
+            ...item,
+            type: item.type || (item.emoji === '─' ? 'separator' : 'page')
+          }));
+          renderLayoutList();
+          renderLayoutEditor();
+          redirectToSettings();
+        });
+      } else {
+        alert('Invalid JSON format. Expected array of objects with emoji and label properties.');
+      }
+    } catch (error) {
+      button.classList.remove('loading');
+      alert('Failed to import layout: ' + error.message);
+    }
+  });
+
+  // File Import functionality
+  document.getElementById('import-file-btn').addEventListener('click', async () => {
+    const fileInput = document.getElementById('import-file');
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const button = document.getElementById('import-file-btn');
+    button.classList.add('loading');
+    
+    try {
+      const text = await file.text();
+      const importedData = JSON.parse(text);
+      
+      button.classList.remove('loading');
+      
+      if (Array.isArray(importedData) && importedData.every(item => item.emoji && item.label)) {
+        showImportConfirmation(() => {
+          // Ensure imported data has type property, default to 'page' if missing
+          layoutData = importedData.map(item => ({
+            ...item,
+            type: item.type || (item.emoji === '─' ? 'separator' : 'page')
+          }));
+          renderLayoutList();
+          renderLayoutEditor();
+          
+          // Clear file input
+          fileInput.value = '';
+          document.getElementById('file-name').textContent = '';
+          button.style.display = 'none';
+          
+          redirectToSettings();
+        });
+      } else {
+        alert('Invalid JSON format. Expected array of objects with emoji and label properties.');
+      }
+    } catch (error) {
+      button.classList.remove('loading');
+      alert('Failed to import layout: ' + error.message);
+    }
+  });
+
+  // Export functionality
+  document.getElementById('export-btn').addEventListener('click', () => {
+    const modal = document.getElementById('export-modal');
+    const textarea = document.getElementById('export-json');
+    
+    // Format the layout data as JSON
+    const exportData = JSON.stringify(layoutData, null, 2);
+    textarea.value = exportData;
+    
+    modal.style.display = 'block';
+  });
+
+  // Download functionality
+  document.getElementById('download-btn').addEventListener('click', () => {
+    // Format the layout data as JSON
+    const exportData = JSON.stringify(layoutData, null, 2);
+    
+    // Create a blob with the JSON data
+    const blob = new Blob([exportData], { type: 'application/json' });
+    
+    // Create a temporary URL for the blob
+    const url = URL.createObjectURL(blob);
+    
+    // Create a temporary anchor element and trigger download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'figma-layout.json';
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // Modal close functionality
+  function closeExportModal() {
+    document.getElementById('export-modal').style.display = 'none';
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeExportModal);
+  document.getElementById('modal-close-btn').addEventListener('click', closeExportModal);
+  
+  // Close modal when clicking overlay
+  document.querySelector('.modal-overlay').addEventListener('click', closeExportModal);
+
+  // Copy to clipboard functionality
+  document.getElementById('copy-btn').addEventListener('click', async () => {
+    const textarea = document.getElementById('export-json');
+    
+    try {
+      await navigator.clipboard.writeText(textarea.value);
+      
+      // Temporarily change button text to show success
+      const button = document.getElementById('copy-btn');
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.style.background = '#10B981';
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '#18A0FB';
+      }, 2000);
+    } catch (error) {
+      // Fallback for older browsers
+      textarea.select();
+      document.execCommand('copy');
+      
+      const button = document.getElementById('copy-btn');
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.style.background = '#10B981';
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '#18A0FB';
+      }, 2000);
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('export-modal').style.display === 'block') {
+      closeExportModal();
+    }
+    if (e.key === 'Escape' && document.getElementById('emoji-picker-modal').style.display === 'block') {
+      closeEmojiPicker();
+    }
+  });
+
+  // Emoji Picker Functionality
+  let emojiPickerCallback = null;
+  let currentEmojiFilter = 'all';
+
+  function openEmojiPicker(callback) {
+    emojiPickerCallback = callback;
+    const modal = document.getElementById('emoji-picker-modal');
+    modal.style.display = 'block';
+    
+    // Reset search and category
+    document.getElementById('emoji-search').value = '';
+    currentEmojiFilter = 'all';
+    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('[data-category="all"]').classList.add('active');
+    
+    renderEmojiGrid();
+    
+    // Focus search input
+    setTimeout(() => {
+      document.getElementById('emoji-search').focus();
+    }, 100);
+  }
+
+  function closeEmojiPicker() {
+    document.getElementById('emoji-picker-modal').style.display = 'none';
+    emojiPickerCallback = null;
+  }
+
+  function renderEmojiGrid() {
+    const grid = document.getElementById('emoji-picker-grid');
+    const searchTerm = document.getElementById('emoji-search').value.toLowerCase();
+    
+    let filteredEmojis = emojiData;
+    
+    // Filter by category
+    if (currentEmojiFilter !== 'all') {
+      filteredEmojis = filteredEmojis.filter(item => item.category === currentEmojiFilter);
+    }
+    
+    // Filter by search term
+    if (searchTerm) {
+      filteredEmojis = filteredEmojis.filter(item => 
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm)) ||
+        item.emoji.includes(searchTerm)
+      );
+    }
+    
+    // Clear grid
+    grid.innerHTML = '';
+    
+    // Add filtered emojis
+    filteredEmojis.forEach(item => {
+      const button = document.createElement('button');
+      button.className = 'emoji-item';
+      button.textContent = item.emoji;
+      button.title = item.name;
+      
+      button.addEventListener('click', () => {
+        if (emojiPickerCallback) {
+          emojiPickerCallback(item.emoji);
+        }
+        closeEmojiPicker();
+      });
+      
+      grid.appendChild(button);
+    });
+    
+    // Show message if no results
+    if (filteredEmojis.length === 0) {
+      const message = document.createElement('div');
+      message.style.gridColumn = '1 / -1';
+      message.style.textAlign = 'center';
+      message.style.color = '#666';
+      message.style.fontSize = '12px';
+      message.style.padding = '20px';
+      message.textContent = 'No emojis found';
+      grid.appendChild(message);
+    }
+  }
+
+  // Emoji picker event listeners
+  document.getElementById('emoji-picker-close').addEventListener('click', closeEmojiPicker);
+  document.querySelector('#emoji-picker-modal .modal-overlay').addEventListener('click', closeEmojiPicker);
+
+  document.getElementById('emoji-search').addEventListener('input', renderEmojiGrid);
+
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Update active category
+      document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      currentEmojiFilter = btn.dataset.category;
+      renderEmojiGrid();
+    });
+  });
 </script>
