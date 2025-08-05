@@ -15,7 +15,7 @@
   
   .tab {
     flex: 1;
-    padding: 12px 16px;
+    padding: 12px 12px;
     cursor: pointer;
     text-align: center;
     border: none;
@@ -24,6 +24,9 @@
     font-weight: 500;
     color: #8C8C8C;
     transition: all 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .tab.active {
@@ -770,12 +773,70 @@
   .import-btn.loading .btn-loading {
     display: inline;
   }
+
+  /* Component card styles */
+  .component-card {
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+  }
+
+  .component-card:hover {
+    border-color: #18A0FB;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .component-thumbnail {
+    width: 100%;
+    height: 80px;
+    background: #F5F5F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #8C8C8C;
+  }
+
+  .component-info {
+    padding: 8px;
+  }
+
+  .component-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .component-library {
+    font-size: 10px;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .scan-btn.loading .btn-text {
+    display: none;
+  }
+
+  .scan-btn.loading .btn-loading {
+    display: inline;
+  }
 </style>
 
 <div class="tabs">
   <button class="tab active" data-tab="scaffold">Scaffold</button>
   <button class="tab" data-tab="settings">Settings</button>
   <button class="tab" data-tab="import-export">Import/Export</button>
+  <button class="tab" data-tab="components">Components</button>
 </div>
 
 <div class="tab-content active" id="scaffold-tab">
@@ -839,6 +900,53 @@
         <div class="export-buttons">
           <button class="export-btn" id="export-btn">View JSON</button>
           <button class="download-btn" id="download-btn">Download JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="components-tab">
+  <div class="scrollable-content">
+    <div class="import-export-section">
+      <h3>Add Library Components</h3>
+      
+      <!-- Quick Actions -->
+      <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+        <button class="scan-btn" id="scan-libraries-btn" style="flex: 1; padding: 10px; background: #18A0FB; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+          <span class="btn-text">Scan Libraries</span>
+          <span class="btn-loading" style="display: none;">Scanning...</span>
+        </button>
+        <button id="import-toggle-btn" style="flex: 1; padding: 10px; background: #6C7B7F; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Import JSON</button>
+      </div>
+      
+      <!-- Import Section (Hidden by default) -->
+      <div id="import-section" style="display: none; margin-bottom: 20px; padding: 16px; background: #f8f8f8; border-radius: 6px;">
+        <p style="font-size: 11px; color: #666; margin-bottom: 12px;">Paste component data exported from your library file:</p>
+        <textarea id="component-data" placeholder="Paste JSON data here..." style="height: 80px; width: 100%; padding: 8px; border: 1px solid #E5E5E5; border-radius: 3px; font-size: 11px; font-family: monospace; resize: vertical;"></textarea>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <button class="import-btn" id="import-components-btn" style="flex: 1;">Import</button>
+          <button id="show-export-code" style="padding: 8px 16px; background: #f0f0f0; color: #333; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 11px; cursor: pointer;">Get Export Code</button>
+        </div>
+        
+        <div id="export-code-section" style="margin-top: 12px; padding: 12px; background: white; border-radius: 4px; display: none;">
+          <pre style="margin: 0; padding: 8px; background: #f5f5f5; border-radius: 3px; font-size: 10px; overflow-x: auto;"><code id="export-code"></code></pre>
+          <button id="copy-export-code" style="margin-top: 8px; padding: 6px 12px; background: #18A0FB; color: white; border: none; border-radius: 3px; font-size: 11px; cursor: pointer;">Copy Code</button>
+        </div>
+      </div>
+      
+      <div id="team-components-status" style="font-size: 11px; color: #666; text-align: center; padding: 12px 0; display: none;"></div>
+      
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #E5E5E5;">
+      
+      <!-- Component Grid -->
+      <div class="component-grid-section">
+        <h4 style="font-size: 12px; margin-bottom: 12px;">Available Components</h4>
+        <div id="component-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px;">
+          <!-- Components will be displayed here -->
+        </div>
+        <div id="no-components-message" style="text-align: center; padding: 40px 20px; color: #666; font-size: 11px;">
+          No components loaded yet. Use one of the methods above to load components.
         </div>
       </div>
     </div>
@@ -1074,6 +1182,9 @@
 
   // Store existing pages from Figma
   let existingPages = [];
+  
+  // Store recently added components
+  let recentComponents = [];
 
   // Context menu variables
   let contextMenuTargetIndex = null;
@@ -1842,4 +1953,206 @@
       renderEmojiGrid();
     });
   });
+
+  // Component functionality - optimized
+  let loadedComponents = [];
+  const componentCache = new Map();
+  let isLoadingComponents = false;
+
+  // Simplified export code
+  const exportCode = `// Run in library file console
+const components = figma.root.findAllWithCriteria({ types: ['COMPONENT'] });
+const data = components.map(c => ({
+  key: c.key,
+  name: c.name,
+  libraryName: figma.root.name
+}));
+console.log(JSON.stringify(data, null, 2));`;
+
+  document.getElementById('export-code').textContent = exportCode;
+
+  // Toggle import section
+  document.getElementById('import-toggle-btn').addEventListener('click', () => {
+    const section = document.getElementById('import-section');
+    const btn = document.getElementById('import-toggle-btn');
+    if (section.style.display === 'none') {
+      section.style.display = 'block';
+      btn.style.background = '#5A6B70';
+    } else {
+      section.style.display = 'none';
+      btn.style.background = '#6C7B7F';
+      document.getElementById('export-code-section').style.display = 'none';
+      document.getElementById('show-export-code').textContent = 'Get Export Code';
+    }
+  });
+
+  // Show/hide export code
+  document.getElementById('show-export-code').addEventListener('click', () => {
+    const section = document.getElementById('export-code-section');
+    const button = document.getElementById('show-export-code');
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    button.textContent = section.style.display === 'none' ? 'Get Export Code' : 'Hide Code';
+  });
+
+  // Copy export code
+  document.getElementById('copy-export-code').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(exportCode);
+      const button = document.getElementById('copy-export-code');
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.style.background = '#10B981';
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '#6C7B7F';
+      }, 2000);
+    } catch (err) {
+      alert('Failed to copy code');
+    }
+  });
+
+  // Import components from JSON
+  document.getElementById('import-components-btn').addEventListener('click', () => {
+    const textarea = document.getElementById('component-data');
+    const jsonData = textarea.value.trim();
+    
+    if (!jsonData) {
+      alert('Please paste component data first.');
+      return;
+    }
+    
+    try {
+      const components = JSON.parse(jsonData);
+      if (!Array.isArray(components)) {
+        throw new Error('Invalid format');
+      }
+      
+      loadedComponents = components;
+      renderComponentGrid(components);
+      textarea.value = '';
+      
+      // Hide no components message
+      document.getElementById('no-components-message').style.display = 'none';
+      
+    } catch (err) {
+      alert('Invalid JSON format. Please check the data and try again.');
+    }
+  });
+
+  // Scan for team library components
+  document.getElementById('scan-libraries-btn').addEventListener('click', () => {
+    const button = document.getElementById('scan-libraries-btn');
+    button.classList.add('loading');
+    
+    parent.postMessage({ 
+      pluginMessage: { 
+        type: 'scanTeamLibraries'
+      } 
+    }, '*');
+  });
+
+  // Optimized component grid rendering with event delegation
+  function renderComponentGrid(components) {
+    const grid = document.getElementById('component-grid');
+    const fragment = document.createDocumentFragment();
+    
+    components.forEach(component => {
+      const card = document.createElement('div');
+      card.className = 'component-card';
+      card.dataset.key = component.key;
+      card.dataset.name = component.name;
+      card.innerHTML = `
+        <div class="component-thumbnail">🧩</div>
+        <div class="component-info">
+          <div class="component-name" title="${component.name}">${component.name}</div>
+          <div class="component-library">${component.libraryName || 'Library'}</div>
+        </div>
+      `;
+      fragment.appendChild(card);
+    });
+    
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
+  }
+  
+  // Event delegation for better performance
+  document.getElementById('component-grid').addEventListener('click', (e) => {
+    const card = e.target.closest('.component-card');
+    if (card && !isLoadingComponents) {
+      const key = card.dataset.key;
+      const name = card.dataset.name;
+      if (key) {
+        isLoadingComponents = true;
+        card.style.opacity = '0.5';
+        addComponentToCover(key, name);
+      }
+    }
+  });
+
+  // Add component to cover
+  function addComponentToCover(componentKey, componentName) {
+    parent.postMessage({ 
+      pluginMessage: { 
+        type: 'addLibraryComponent',
+        componentKey: componentKey,
+        componentName: componentName
+      } 
+    }, '*');
+  }
+
+  // Optimized message handling
+  window.addEventListener('message', (event) => {
+    const message = event.data.pluginMessage;
+    if (!message) return;
+    
+    switch (message.type) {
+      case 'teamLibraryScanComplete':
+        handleScanComplete(message);
+        break;
+      case 'componentAdded':
+        handleComponentAdded(message);
+        break;
+    }
+  });
+  
+  function handleScanComplete(message) {
+    const button = document.getElementById('scan-libraries-btn');
+    button.classList.remove('loading');
+    
+    const status = document.getElementById('team-components-status');
+    
+    if (message.components?.length > 0) {
+      // Deduplicate components
+      const existingKeys = new Set(loadedComponents.map(c => c.key));
+      const newComponents = message.components.filter(c => !existingKeys.has(c.key));
+      
+      loadedComponents = [...loadedComponents, ...newComponents];
+      renderComponentGrid(loadedComponents);
+      status.textContent = `Found ${message.components.length} components.`;
+      document.getElementById('no-components-message').style.display = 'none';
+    } else {
+      status.textContent = 'No components found. Enable libraries in Assets panel.';
+    }
+  }
+  
+  function handleComponentAdded(message) {
+    isLoadingComponents = false;
+    
+    // Reset all cards opacity
+    document.querySelectorAll('.component-card').forEach(card => {
+      card.style.opacity = '1';
+    });
+    
+    if (!message.success) {
+      // Show inline error instead of alert
+      const errorDiv = document.createElement('div');
+      errorDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4444; color: white; padding: 12px 20px; border-radius: 6px; font-size: 12px; z-index: 1000;';
+      errorDiv.textContent = message.error || 'Failed to add component';
+      document.body.appendChild(errorDiv);
+      
+      setTimeout(() => {
+        errorDiv.remove();
+      }, 3000);
+    }
+  }
 </script>
