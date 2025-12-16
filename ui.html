@@ -860,8 +860,41 @@
       <button class="add-page-btn" id="add-page-btn">+ Add Page</button>
       <button class="add-separator-btn" id="add-separator-btn">+ Add Separator</button>
     </div>
+
+    <div class="cover-component-section">
+      <h4>Auto-Insert Cover Component</h4>
+
+      <div class="toggle-row">
+        <span class="toggle-label">Enable auto-insert on Cover page</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="cover-component-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div id="cover-component-config" class="cover-component-config" style="display: none;">
+        <div class="input-group">
+          <label for="component-key">Component Key</label>
+          <input type="text" id="component-key" class="component-url-input" placeholder="Paste key or use button below">
+        </div>
+
+        <div class="button-row">
+          <button class="get-key-btn" id="get-key-btn">
+            <span class="btn-text">Get from Selection</span>
+          </button>
+          <button class="preview-btn" id="preview-component-btn">
+            <span class="btn-text">Verify Key</span>
+            <span class="btn-loading" style="display: none;">Loading...</span>
+          </button>
+        </div>
+
+        <div id="component-preview-result"></div>
+
+        <p class="helper-text">To get a component key: Open your library file, select the component, then click "Get from Selection".</p>
+      </div>
+    </div>
   </div>
-  
+
   <div class="bottom-buttons">
     <div class="button-group">
       <button class="reset-btn" id="reset-btn">Reset</button>
@@ -1018,6 +1051,13 @@
 
   // Current layout data (can be modified)
   let layoutData = [...originalLayoutData];
+
+  // Cover component settings state
+  let coverComponentSettings = {
+    componentKey: '',
+    enabled: false,
+    componentName: ''
+  };
 
   // Emoji data with names and categories for search functionality
   const emojiData = [
@@ -1534,6 +1574,45 @@
     } else if (event.data.pluginMessage?.type === 'existingPagesLoaded') {
       existingPages = event.data.pluginMessage.existingPages;
       renderLayoutList();
+    } else if (event.data.pluginMessage?.type === 'coverComponentSettingsLoaded') {
+      const settings = event.data.pluginMessage.settings;
+      if (settings) {
+        coverComponentSettings = settings;
+        document.getElementById('cover-component-toggle').checked = settings.enabled;
+        document.getElementById('cover-component-config').style.display = settings.enabled ? 'block' : 'none';
+
+        if (settings.componentKey) {
+          // Show the stored component key
+          document.getElementById('component-key').value = settings.componentKey;
+
+          if (settings.componentName) {
+            showPreviewResult(true, settings.componentName);
+          }
+        }
+      }
+    } else if (event.data.pluginMessage?.type === 'coverComponentPreviewResult') {
+      const btn = document.getElementById('preview-component-btn');
+      btn.classList.remove('loading');
+      btn.disabled = false;
+
+      const result = event.data.pluginMessage.result;
+      if (result.success) {
+        coverComponentSettings.componentName = result.name;
+        showPreviewResult(true, result.name);
+      } else {
+        showPreviewResult(false, result.error);
+      }
+    } else if (event.data.pluginMessage?.type === 'selectedComponentKey') {
+      const msg = event.data.pluginMessage;
+      if (msg.success) {
+        // Fill in the component key input
+        document.getElementById('component-key').value = msg.componentKey;
+        coverComponentSettings.componentKey = msg.componentKey;
+        coverComponentSettings.componentName = msg.componentName;
+        showPreviewResult(true, msg.componentName);
+      } else {
+        showPreviewResult(false, msg.error);
+      }
     }
   });
 
@@ -1548,10 +1627,17 @@
     } 
   }, '*');
 
-  parent.postMessage({ 
-    pluginMessage: { 
+  parent.postMessage({
+    pluginMessage: {
       type: 'getExistingPages'
-    } 
+    }
+  }, '*');
+
+  // Load cover component settings on startup
+  parent.postMessage({
+    pluginMessage: {
+      type: 'loadCoverComponentSettings'
+    }
   }, '*');
 
   // Create button functionality
@@ -1588,11 +1674,20 @@
 
   // Save functionality
   document.getElementById('save-btn').addEventListener('click', () => {
-    parent.postMessage({ 
-      pluginMessage: { 
+    // Save layout
+    parent.postMessage({
+      pluginMessage: {
         type: 'saveLayout',
         layoutData: layoutData
-      } 
+      }
+    }, '*');
+
+    // Save cover component settings
+    parent.postMessage({
+      pluginMessage: {
+        type: 'saveCoverComponentSettings',
+        settings: coverComponentSettings
+      }
     }, '*');
   });
 
@@ -1948,7 +2043,7 @@
       // Update active category
       document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      
+
       currentEmojiFilter = btn.dataset.category;
       renderEmojiGrid();
     });

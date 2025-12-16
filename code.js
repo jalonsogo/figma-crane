@@ -28,26 +28,41 @@ function updateExistingPages() {
     return existingPages.map(page => page.name);
 }
 function createPagesFromLayout(layoutData) {
-    console.log('🏗 Starting Crane scaffold...');
-    const existingPageNames = updateExistingPages();
-    for (const layoutItem of layoutData) {
-        let pageName;
-        if (layoutItem.type === 'separator') {
-            pageName = '---';
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log('Starting Crane scaffold...');
+        const existingPageNames = updateExistingPages();
+        let coverPage = null;
+        for (const layoutItem of layoutData) {
+            let pageName;
+            if (layoutItem.type === 'separator') {
+                pageName = '---';
+            }
+            else {
+                pageName = layoutItem.emoji + ' - ' + layoutItem.label;
+            }
+            if (existingPageNames.indexOf(pageName) < 0) {
+                const page = figma.createPage();
+                page.name = pageName;
+                console.log(`Created: ${pageName}`);
+                // Track the Cover page if this is it
+                if (layoutItem.label === 'Cover') {
+                    coverPage = page;
+                }
+            }
+            else {
+                console.log(`Skipped existing: ${pageName}`);
+                // Also check existing pages for Cover
+                if (layoutItem.label === 'Cover') {
+                    coverPage = figma.root.children.find(p => p.name === pageName) || null;
+                }
+            }
         }
-        else {
-            pageName = layoutItem.emoji + ' - ' + layoutItem.label;
+        // Auto-insert cover component if enabled and Cover page exists
+        if (coverPage) {
+            yield insertCoverComponent(coverPage);
         }
-        if (existingPageNames.indexOf(pageName) < 0) {
-            const page = figma.createPage();
-            page.name = pageName;
-            console.log(`✅ Created: ${pageName}`);
-        }
-        else {
-            console.log(`⏭ Skipped existing: ${pageName}`);
-        }
-    }
-    console.log('🎉 Scaffold complete!');
+        console.log('Scaffold complete!');
+    });
 }
 function saveLayoutData(layoutData) {
     // Save to plugin data for persistence
@@ -164,7 +179,7 @@ figma.ui.onmessage = (event) => __awaiter(void 0, void 0, void 0, function* () {
     switch (event.type) {
         case 'createPages':
             const layoutToCreate = event.layoutData || defaultLayout;
-            createPagesFromLayout(layoutToCreate);
+            yield createPagesFromLayout(layoutToCreate);
             figma.closePlugin();
             break;
         case 'saveLayout':

@@ -34,28 +34,44 @@ function updateExistingPages(): string[] {
     return existingPages.map(page => page.name);
 }
 
-function createPagesFromLayout(layoutData: LayoutItem[]) {
-  console.log('🏗 Starting Crane scaffold...');
+async function createPagesFromLayout(layoutData: LayoutItem[]) {
+  console.log('Starting Crane scaffold...');
   const existingPageNames = updateExistingPages();
-  
+  let coverPage: PageNode | null = null;
+
   for (const layoutItem of layoutData) {
     let pageName: string;
-    
+
     if (layoutItem.type === 'separator') {
       pageName = '---';
     } else {
       pageName = layoutItem.emoji + ' - ' + layoutItem.label;
     }
-    
+
     if (existingPageNames.indexOf(pageName) < 0) {
       const page = figma.createPage();
       page.name = pageName;
-      console.log(`✅ Created: ${pageName}`);
+      console.log(`Created: ${pageName}`);
+
+      // Track the Cover page if this is it
+      if (layoutItem.label === 'Cover') {
+        coverPage = page;
+      }
     } else {
-      console.log(`⏭ Skipped existing: ${pageName}`);
+      console.log(`Skipped existing: ${pageName}`);
+      // Also check existing pages for Cover
+      if (layoutItem.label === 'Cover') {
+        coverPage = figma.root.children.find(p => p.name === pageName) as PageNode || null;
+      }
     }
   }
-  console.log('🎉 Scaffold complete!');
+
+  // Auto-insert cover component if enabled and Cover page exists
+  if (coverPage) {
+    await insertCoverComponent(coverPage);
+  }
+
+  console.log('Scaffold complete!');
 }
 
 function saveLayoutData(layoutData: LayoutItem[]) {
@@ -187,16 +203,16 @@ figma.ui.onmessage = async (event) => {
   switch (event.type) {
     case 'createPages':
       const layoutToCreate = event.layoutData || defaultLayout;
-      createPagesFromLayout(layoutToCreate);
+      await createPagesFromLayout(layoutToCreate);
       figma.closePlugin();
       break;
-      
+
     case 'saveLayout':
       if (event.layoutData) {
         saveLayoutData(event.layoutData);
       }
       break;
-      
+
     case 'loadLayout':
       const savedLayout = loadLayoutData();
       figma.ui.postMessage({
@@ -204,7 +220,7 @@ figma.ui.onmessage = async (event) => {
         layoutData: savedLayout
       });
       break;
-      
+
     case 'getExistingPages':
       const existingPages = updateExistingPages();
       figma.ui.postMessage({
