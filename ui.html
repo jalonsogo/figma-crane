@@ -770,6 +770,214 @@
   .import-btn.loading .btn-loading {
     display: inline;
   }
+
+  /* Cover Component Settings */
+  .cover-component-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #E5E5E5;
+  }
+
+  .cover-component-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .toggle-label {
+    font-size: 11px;
+    color: #333;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    display: inline-block;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 20px;
+  }
+
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+
+  input:checked + .toggle-slider {
+    background-color: #18A0FB;
+  }
+
+  input:checked + .toggle-slider:before {
+    transform: translateX(16px);
+  }
+
+  .cover-component-config {
+    margin-top: 12px;
+  }
+
+  .cover-component-config .input-group {
+    margin-bottom: 8px;
+  }
+
+  .cover-component-config .input-group label {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .component-url-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+    font-size: 11px;
+    box-sizing: border-box;
+  }
+
+  .component-url-input:focus {
+    outline: none;
+    border-color: #18A0FB;
+    box-shadow: 0 0 0 1px #18A0FB;
+  }
+
+  .component-url-input:disabled {
+    background-color: #F5F5F5;
+    color: #8C8C8C;
+  }
+
+  .preview-btn {
+    width: 100%;
+    padding: 8px 12px;
+    background: #F8F8F8;
+    color: #333;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .preview-btn:hover:not(:disabled) {
+    background: #E8F4FD;
+    border-color: #18A0FB;
+    color: #18A0FB;
+  }
+
+  .preview-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .preview-btn.loading .btn-text {
+    display: none;
+  }
+
+  .preview-btn.loading .btn-loading {
+    display: inline;
+  }
+
+  .component-preview {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: #F0FDF4;
+    border: 1px solid #86EFAC;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+
+  .component-preview.error {
+    background: #FEF2F2;
+    border-color: #FCA5A5;
+  }
+
+  .preview-icon {
+    margin-right: 8px;
+    font-size: 14px;
+  }
+
+  .preview-text {
+    font-size: 11px;
+    color: #333;
+  }
+
+  .component-preview.error .preview-text {
+    color: #DC2626;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .button-row .preview-btn,
+  .button-row .get-key-btn {
+    flex: 1;
+    margin-top: 0;
+  }
+
+  .get-key-btn {
+    padding: 8px 12px;
+    background: #18A0FB;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .get-key-btn:hover {
+    background: #0D8CE8;
+  }
+
+  .get-key-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .helper-text {
+    font-size: 10px;
+    color: #8C8C8C;
+    margin-top: 12px;
+    line-height: 1.4;
+  }
 </style>
 
 <div class="tabs">
@@ -799,8 +1007,41 @@
       <button class="add-page-btn" id="add-page-btn">+ Add Page</button>
       <button class="add-separator-btn" id="add-separator-btn">+ Add Separator</button>
     </div>
+
+    <div class="cover-component-section">
+      <h4>Auto-Insert Cover Component</h4>
+
+      <div class="toggle-row">
+        <span class="toggle-label">Enable auto-insert on Cover page</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="cover-component-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div id="cover-component-config" class="cover-component-config" style="display: none;">
+        <div class="input-group">
+          <label for="component-key">Component Key</label>
+          <input type="text" id="component-key" class="component-url-input" placeholder="Paste key or use button below">
+        </div>
+
+        <div class="button-row">
+          <button class="get-key-btn" id="get-key-btn">
+            <span class="btn-text">Get from Selection</span>
+          </button>
+          <button class="preview-btn" id="preview-component-btn">
+            <span class="btn-text">Verify Key</span>
+            <span class="btn-loading" style="display: none;">Loading...</span>
+          </button>
+        </div>
+
+        <div id="component-preview-result"></div>
+
+        <p class="helper-text">To get a component key: Open your library file, select the component, then click "Get from Selection".</p>
+      </div>
+    </div>
   </div>
-  
+
   <div class="bottom-buttons">
     <div class="button-group">
       <button class="reset-btn" id="reset-btn">Reset</button>
@@ -910,6 +1151,13 @@
 
   // Current layout data (can be modified)
   let layoutData = [...originalLayoutData];
+
+  // Cover component settings state
+  let coverComponentSettings = {
+    componentKey: '',
+    enabled: false,
+    componentName: ''
+  };
 
   // Emoji data with names and categories for search functionality
   const emojiData = [
@@ -1423,6 +1671,45 @@
     } else if (event.data.pluginMessage?.type === 'existingPagesLoaded') {
       existingPages = event.data.pluginMessage.existingPages;
       renderLayoutList();
+    } else if (event.data.pluginMessage?.type === 'coverComponentSettingsLoaded') {
+      const settings = event.data.pluginMessage.settings;
+      if (settings) {
+        coverComponentSettings = settings;
+        document.getElementById('cover-component-toggle').checked = settings.enabled;
+        document.getElementById('cover-component-config').style.display = settings.enabled ? 'block' : 'none';
+
+        if (settings.componentKey) {
+          // Show the stored component key
+          document.getElementById('component-key').value = settings.componentKey;
+
+          if (settings.componentName) {
+            showPreviewResult(true, settings.componentName);
+          }
+        }
+      }
+    } else if (event.data.pluginMessage?.type === 'coverComponentPreviewResult') {
+      const btn = document.getElementById('preview-component-btn');
+      btn.classList.remove('loading');
+      btn.disabled = false;
+
+      const result = event.data.pluginMessage.result;
+      if (result.success) {
+        coverComponentSettings.componentName = result.name;
+        showPreviewResult(true, result.name);
+      } else {
+        showPreviewResult(false, result.error);
+      }
+    } else if (event.data.pluginMessage?.type === 'selectedComponentKey') {
+      const msg = event.data.pluginMessage;
+      if (msg.success) {
+        // Fill in the component key input
+        document.getElementById('component-key').value = msg.componentKey;
+        coverComponentSettings.componentKey = msg.componentKey;
+        coverComponentSettings.componentName = msg.componentName;
+        showPreviewResult(true, msg.componentName);
+      } else {
+        showPreviewResult(false, msg.error);
+      }
     }
   });
 
@@ -1437,10 +1724,17 @@
     } 
   }, '*');
 
-  parent.postMessage({ 
-    pluginMessage: { 
+  parent.postMessage({
+    pluginMessage: {
       type: 'getExistingPages'
-    } 
+    }
+  }, '*');
+
+  // Load cover component settings on startup
+  parent.postMessage({
+    pluginMessage: {
+      type: 'loadCoverComponentSettings'
+    }
   }, '*');
 
   // Create button functionality
@@ -1477,11 +1771,20 @@
 
   // Save functionality
   document.getElementById('save-btn').addEventListener('click', () => {
-    parent.postMessage({ 
-      pluginMessage: { 
+    // Save layout
+    parent.postMessage({
+      pluginMessage: {
         type: 'saveLayout',
         layoutData: layoutData
-      } 
+      }
+    }, '*');
+
+    // Save cover component settings
+    parent.postMessage({
+      pluginMessage: {
+        type: 'saveCoverComponentSettings',
+        settings: coverComponentSettings
+      }
     }, '*');
   });
 
@@ -1837,9 +2140,74 @@
       // Update active category
       document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      
+
       currentEmojiFilter = btn.dataset.category;
       renderEmojiGrid();
     });
+  });
+
+  // Cover component feature helper functions
+  function showPreviewResult(success, message) {
+    const resultDiv = document.getElementById('component-preview-result');
+    resultDiv.style.display = 'block';
+
+    if (success) {
+      resultDiv.innerHTML = `
+        <div class="component-preview">
+          <span class="preview-icon">&#10003;</span>
+          <span class="preview-text">Found: <strong>${message}</strong></span>
+        </div>
+      `;
+    } else {
+      resultDiv.innerHTML = `
+        <div class="component-preview error">
+          <span class="preview-icon">&#10007;</span>
+          <span class="preview-text">${message}</span>
+        </div>
+      `;
+    }
+  }
+
+  // Cover component toggle handler
+  document.getElementById('cover-component-toggle').addEventListener('change', (e) => {
+    const configSection = document.getElementById('cover-component-config');
+    configSection.style.display = e.target.checked ? 'block' : 'none';
+    coverComponentSettings.enabled = e.target.checked;
+  });
+
+  // Cover component preview button handler (Verify Key)
+  document.getElementById('preview-component-btn').addEventListener('click', () => {
+    const keyInput = document.getElementById('component-key');
+    const componentKey = keyInput.value.trim();
+
+    if (!componentKey) {
+      showPreviewResult(false, 'Please enter a component key or use "Get from Selection"');
+      return;
+    }
+
+    // Store the component key
+    coverComponentSettings.componentKey = componentKey;
+
+    // Show loading state
+    const btn = document.getElementById('preview-component-btn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    // Request preview from plugin
+    parent.postMessage({
+      pluginMessage: {
+        type: 'previewCoverComponent',
+        componentKey: componentKey
+      }
+    }, '*');
+  });
+
+  // Get component key from selection button handler
+  document.getElementById('get-key-btn').addEventListener('click', () => {
+    parent.postMessage({
+      pluginMessage: {
+        type: 'getSelectedComponentKey'
+      }
+    }, '*');
   });
 </script>
