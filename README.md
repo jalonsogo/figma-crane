@@ -17,6 +17,7 @@ Crane is a powerful Figma plugin designed to streamline your design workflow by 
 - **Emoji Picker**: Modern emoji selector with search and category filtering
 - **Page Management**: Add, duplicate, delete, and modify pages and separators
 - **Live Preview**: Changes reflect immediately in the scaffold tab
+- **Auto-Insert Cover Component**: Automatically add a component to the Cover page when scaffolding
 
 ### 📤 Import/Export Tab
 - **URL Import**: Import layouts from remote JSON files
@@ -45,6 +46,15 @@ Crane comes with a thoughtfully designed default layout perfect for design proje
 5. **Share**: Export your custom layouts to share with your team
 
 ## 📊 Advanced Features
+
+### Auto-Insert Cover Component
+Configure Crane to automatically insert a component onto the Cover page when scaffolding:
+1. Open the Settings tab and enable "Auto-insert cover component"
+2. Select a component in your Figma file and click "Use Current Selection" to capture its key
+3. Optionally use the "Verify" button to validate the component key before saving
+4. When scaffolding, the component will be automatically inserted on the Cover page
+
+This feature uses `clientStorage` for global persistence, so your component key is saved across all Figma files.
 
 ### Drag & Drop Reordering
 Easily reorganize your page structure by dragging items in the Settings tab.
