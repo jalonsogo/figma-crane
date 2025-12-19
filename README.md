@@ -1,6 +1,6 @@
 # Crane - Figma Page Scaffolding Plugin
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 
 Crane is a powerful Figma plugin designed to streamline your design workflow by automatically creating structured page layouts for your projects. Whether you're starting a new design project or organizing an existing one, Crane helps you maintain consistency and save time.
 
