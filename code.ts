@@ -134,14 +134,15 @@ async function insertCoverComponent(coverPage: PageNode): Promise<boolean> {
 
   try {
     const component = await figma.importComponentByKeyAsync(settings.componentKey);
+
+    // Switch to Cover page before creating instance
+    figma.currentPage = coverPage;
+
     const instance = component.createInstance();
 
     // Position instance at origin of the cover page
     instance.x = 0;
     instance.y = 0;
-
-    // Add to cover page
-    coverPage.appendChild(instance);
 
     console.log('Cover component inserted successfully');
     figma.notify('Cover component added!');
