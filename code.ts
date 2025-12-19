@@ -66,7 +66,14 @@ async function createPagesFromLayout(layoutData: LayoutItem[]) {
     }
   }
 
-  // Auto-insert cover component if enabled and Cover page exists
+  // Auto-insert cover component if enabled
+  // If Cover page wasn't in the layout, look for it in existing pages
+  if (!coverPage) {
+    coverPage = figma.root.children.find(p =>
+      p.name === '📄 - Cover' || p.name.includes('Cover')
+    ) as PageNode || null;
+  }
+
   if (coverPage) {
     await insertCoverComponent(coverPage);
   }
