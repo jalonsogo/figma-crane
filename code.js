@@ -131,12 +131,12 @@ function insertCoverComponent(coverPage) {
         }
         try {
             const component = yield figma.importComponentByKeyAsync(settings.componentKey);
-            // Switch to Cover page before creating instance
-            figma.currentPage = coverPage;
             const instance = component.createInstance();
             // Position instance at origin of the cover page
             instance.x = 0;
             instance.y = 0;
+            // Explicitly add instance to the cover page
+            coverPage.appendChild(instance);
             console.log('Cover component inserted successfully');
             figma.notify('Cover component added!');
             return true;
